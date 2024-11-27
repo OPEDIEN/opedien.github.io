@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>假设分配练习</title>
+    <style>
+        :root {
+            --background: #f5f5f7;
+            --card-background: rgba(255, 255, 255, 0.95);
+            --text-primary: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --accent-color: #0071e3;
+            --border-color: #d2d2d7;
+            --success-bg: #f2f7ed;
+            --success-border: #d5e5c5;
+            --error-bg: #fdf1f1;
+            --error-border: #fad7d7;
+            --button-secondary: #e8e8ed;
+        }
+
+        body.dark-mode {
+            --background: #000000;
+            --card-background: rgba(28, 28, 30, 0.95);
+            --text-primary: #f5f5f7;
+            --text-secondary: #86868b;
+            --border-color: #424245;
+            --success-bg: rgba(53, 125, 34, 0.1);
+            --success-border: #365e2c;
+            --error-bg: rgba(215, 0, 21, 0.1);
+            --error-border: #692227;
+            --button-secondary: #424245;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.47059;
+            letter-spacing: -0.022em;
+        }
+
+        .problem {
+            background-color: var(--card-background);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .left-section {
+            padding-right: 30px;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        #question {
+            background: var(--card-background);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            font-size: 19px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .input-group {
+            background: var(--card-background);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 17px;
+            background: var(--card-background);
+            color: var(--text-primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -moz-appearance: textfield;
+        }
+
+        .input-group input::-webkit-outer-spin-button,
+        .input-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-group input:hover {
+            border-color: var(--text-secondary);
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+            transform: scale(1.01);
+        }
+
+        #timer {
+            text-align: center;
+            padding: 20px;
+            background: var(--card-background);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            font-size: 42px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.022em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .result {
+            margin-top: 0;
+            padding: 25px;
+            border-radius: 14px;
+            font-size: 15px;
+            line-height: 1.6;
+            animation: slideIn 0.3s ease;
+            flex-grow: 1;
+        }
+
+        .correct {
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-border);
+        }
+
+        .incorrect {
+            background-color: var(--error-bg);
+            border: 1px solid var(--error-border);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+        .btn:first-child {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn:last-child {
+            background-color: var(--button-secondary);
+            color: var(--text-primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-primary);
+            letter-spacing: -0.029em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+            
+            .problem {
+                padding: 25px;
+            }
+            
+            .content-wrapper {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .left-section {
+                padding-right: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 30px;
+            }
+
+            #timer {
+                font-size: 32px;
+                padding: 15px;
+            }
+            
+            h2 {
+                font-size: 26px;
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--button-secondary);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: var(--border-color);
+        }
+
+        .theme-toggle svg {
+            fill: var(--text-primary);
+            width: 20px;
+            height: 20px;
+        }
+
+        .theme-toggle .moon-icon {
+            display: none;
+        }
+
+        body.dark-mode .moon-icon {
+            display: block;
+        }
+
+        body.dark-mode .sun-icon {
+            display: none;
+        }
+
+        @keyframes tears {
+            0% { transform: translateY(0); opacity: 0.8; }
+            100% { transform: translateY(20px); opacity: 0; }
+        }
+
+        .crying-face {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 100px;
+            z-index: 9999;
+            animation: fadeOut 2s forwards;
+        }
+
+        .tear {
+            position: absolute;
+            background: #4a9eff;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: tears 1s infinite;
+        }
+
+        .tear-left {
+            left: 20px;
+            top: 50px;
+        }
+
+        .tear-right {
+            right: 20px;
+            top: 50px;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="problem">
+        <div class="header">
+            <h2>假设分配练习</h2>
+            <button id="theme-toggle" class="theme-toggle" aria-label="切换深色模式">
+                <svg class="sun-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M12 18C8.68629 18 6 15.3137 6 12C6 8.68629 8.68629 6 12 6C15.3137 6 18 8.68629 18 12C18 15.3137 15.3137 18 12 18ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16ZM11 1H13V4H11V1ZM11 20H13V23H11V20ZM3.51472 4.92893L4.92893 3.51472L7.05025 5.63604L5.63604 7.05025L3.51472 4.92893ZM16.9497 18.364L18.364 16.9497L20.4853 19.0711L19.0711 20.4853L16.9497 18.364ZM19.0711 3.51472L20.4853 4.92893L18.364 7.05025L16.9497 5.63604L19.0711 3.51472ZM5.63604 16.9497L7.05025 18.364L4.92893 20.4853L3.51472 19.0711L5.63604 16.9497ZM23 11V13H20V11H23ZM4 11V13H1V11H4Z"/>
+                </svg>
+                <svg class="moon-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12C21 11.54 20.96 11.08 20.9 10.64C19.92 12.01 18.32 12.9 16.5 12.9C13.52 12.9 11.1 10.48 11.1 7.5C11.1 5.69 11.99 4.08 13.36 3.1C12.92 3.04 12.46 3 12 3Z"/>
+                </svg>
+            </button>
+        </div>
+        <div class="content-wrapper">
+            <!-- 左侧：题目和输入区域 -->
+            <div class="left-section">
+                <div id="question"></div>
+                <div class="input-group">
+                    <label>基期A：</label>
+                    <input type="number" id="inputA" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>增量X：</label>
+                    <input type="number" id="inputX" step="0.01">
+                </div>
+                <div class="btn-group">
+                    <button class="btn" onclick="checkAnswer()">提交答案</button>
+                    <button class="btn" onclick="generateProblem()">下一题</button>
+                </div>
+            </div>
+            
+            <!-- 右侧：计时器和结果 -->
+            <div class="right-section">
+                <div id="timer">00:00</div>
+                <div id="result" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let correctA, correctX, givenB, givenR;
+        let seconds = 0;
+        let timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2,'0')}:${remainingSeconds.toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function generateProblem() {
+            // 重置并重新开始计时
+            clearInterval(timerInterval);
+            seconds = 0;
+            document.getElementById('timer').textContent = '00:00';
+            startTimer();
+            
+            // 随机生成B(100-1000)和R(10%-100%)
+            givenB = Math.floor(Math.random() * 901) + 100;
+            givenR = (Math.floor(Math.random() * 91) + 10) / 100;
+            
+            // 计算正确答案
+            correctA = givenB / (1 + givenR);
+            correctX = (givenB * givenR) / (1 + givenR);
+            
+            // 显示题目
+            document.getElementById('question').innerHTML = 
+                `已知末期B = ${givenB.toFixed(2)}, 增长率R = ${(givenR * 100).toFixed(2)}%<br>
+                请计算基期A和增量X`;
+                
+            // 清除输入框内容
+            document.getElementById('inputA').value = '';
+            document.getElementById('inputX').value = '';
+            
+            // 清除结果显示
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('result').className = 'result';
+        }
+
+        function createConfetti() {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '9999';
+            document.body.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const numberOfPieces = 100;
+            const colors = ['#ff577f', '#ff884b', '#ffd384', '#fff9b0'];
+
+            class Piece {
+                constructor() {
+                    this.x = canvas.width * Math.random();
+                    this.y = -20;
+                    this.rotation = Math.random() * 360;
+                    this.size = Math.random() * 8 + 4;
+                    this.speedY = Math.random() * 3 + 2;
+                    this.speedX = Math.random() * 2 - 1;
+                    this.speedRotation = Math.random() * 2 - 1;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+
+                update() {
+                    this.y += this.speedY;
+                    this.x += this.speedX;
+                    this.rotation += this.speedRotation;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate((this.rotation * Math.PI) / 180);
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+
+            for (let i = 0; i < numberOfPieces; i++) {
+                pieces.push(new Piece());
+            }
+
+            let animationId;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach((piece, i) => {
+                    piece.update();
+                    piece.draw();
+                    if (piece.y > canvas.height) {
+                        pieces[i] = new Piece();
+                    }
+                });
+                animationId = requestAnimationFrame(animate);
+            }
+
+            animate();
+
+            // 3秒后停止动画并移除canvas
+            setTimeout(() => {
+                cancelAnimationFrame(animationId);
+                document.body.removeChild(canvas);
+            }, 3000);
+        }
+
+        function showCryingFace() {
+            const face = document.createElement('div');
+            face.className = 'crying-face';
+            face.innerHTML = `
+                😢
+                <div class="tear tear-left"></div>
+                <div class="tear tear-right"></div>
+            `;
+            document.body.appendChild(face);
+
+            // 2秒后移除哭泣表情
+            setTimeout(() => {
+                document.body.removeChild(face);
+            }, 2000);
+        }
+
+        function checkAnswer() {
+            const userA = parseFloat(document.getElementById('inputA').value);
+            const userX = parseFloat(document.getElementById('inputX').value);
+            
+            // 停止计时并记录时间
+            stopTimer();
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            const timeSpent = `${minutes.toString().padStart(2,'0')}:${remainingSeconds.toString().padStart(2,'0')}`;
+            
+            // 计算误差百分比
+            const errorA = Math.abs((userA - correctA) / correctA);
+            const errorX = Math.abs((userX - correctX) / correctX);
+            
+            // 判断是否在1%误差范围内
+            const isCorrect = errorA <= 0.01 && errorX <= 0.01;
+            
+            // 显示结果
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${isCorrect ? 'correct' : 'incorrect'}`;
+            resultDiv.innerHTML = `
+                <p>用时：${timeSpent}</p>
+                <p>${isCorrect ? '恭喜，答案正确！' : '答案错误'}</p>
+                <p>正确答案：</p>
+                <p>基期A = ${correctA.toFixed(2)}</p>
+                <p>增量X = ${correctX.toFixed(2)}</p>
+                <p>您的误差：</p>
+                <p>基期A误差：${(errorA * 100).toFixed(2)}%</p>
+                <p>增量X误差：${(errorX * 100).toFixed(2)}%</p>
+            `;
+            
+            // 根据结果显示不同的动画效果
+            if (isCorrect) {
+                createConfetti();
+            } else {
+                showCryingFace();
+            }
+        }
+
+        // 页面加载时生成第一道题
+        window.onload = generateProblem;
+
+        // 主题切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // 检查本地存储中的主题设置
+        const savedTheme = localStorage.getItem('theme') || 
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // 切换主题
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 监听系统主题变化
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (!localStorage.getItem('theme')) {
+                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            }
+        });
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+    </script>
+</body>
+</html>
